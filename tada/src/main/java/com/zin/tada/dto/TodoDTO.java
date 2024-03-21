@@ -21,4 +21,12 @@ public class TodoDTO {
         this.title = entity.getTitle();
         this.done = entity.isDone();
     }
+
+    public static TodoEntity toEntity(final TodoDTO dto) {
+        return TodoEntity.builder()
+                .id(dto.id)
+                .title(dto.title)
+                .done(dto.done)
+                .build();
+    }
 }

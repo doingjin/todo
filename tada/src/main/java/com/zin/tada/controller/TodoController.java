@@ -4,6 +4,7 @@ import com.zin.tada.dto.ResponseDTO;
 import com.zin.tada.dto.TodoDTO;
 import com.zin.tada.model.TodoEntity;
 import com.zin.tada.service.TodoService;
+import jakarta.persistence.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +57,80 @@ public class TodoController {
             String error = e.getMessage();
 
             ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> retrieveTodoList() {
+        String temporaryUserId = "temporary-user";
+
+        List<TodoEntity> entities = todoService.retrieve(temporaryUserId);
+
+        List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+        ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    /**
+     * 할 일 변경
+     * @param dto TodoDTO
+     * @return ResponseEntity
+     */
+    @PutMapping
+    public ResponseEntity<?> updateTodo (@RequestBody TodoDTO dto) {
+        try {
+            String temporaryUserId = "temporary-user";
+
+//            if (dto.getId() == null) {
+//                throw new RuntimeException("");
+//            }
+
+            TodoEntity entity = TodoDTO.toEntity(dto);
+
+            entity.setUserId(temporaryUserId);
+
+            List<TodoEntity> entities = todoService.updateTodo(entity);
+
+            List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            String error = e.getMessage();
+
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteTodo(@RequestBody TodoDTO dto) {
+
+        try {
+            String temporaryUserId = "temporary-user";
+
+            TodoEntity entity = TodoDTO.toEntity(dto);
+
+            entity.setUserId(temporaryUserId);
+
+            List<TodoEntity> entities = todoService.deleteTodo(entity);
+
+            List<TodoDTO> dtos = entities.stream().map(TodoDTO::new).collect(Collectors.toList());
+
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            String error = e.getMessage();
+            ResponseDTO<TodoDTO> response = ResponseDTO.<TodoDTO>builder().error(error).build();
+
             return ResponseEntity.badRequest().body(response);
         }
     }

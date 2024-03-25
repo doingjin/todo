@@ -7,13 +7,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository()
+@Repository
 public interface TodoRepository extends JpaRepository<TodoEntity, String> {
 
     List<TodoEntity> findByUserId(String userId);
 
-//    @Query("select * from TodoEntity t where t.userId = ?1")
-//    List<TodoEntity> findeByUserIdQuery(String userId);
+    @Query(value = "select * from todo_test.TODO t where t.userId = ?1", nativeQuery = true)
+    List<TodoEntity> findeByUserIdQuery(String userId);
 
 
 
